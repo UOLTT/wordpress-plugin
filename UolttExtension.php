@@ -20,6 +20,10 @@ add_action('admin_menu', function() {
     add_action( "load-$hook", 'add_user_list_options' );
 });
 
+function UserAdd() {
+    require_once UOLTT_EXTENSION_DIR.'/pages/UserAdd.php';
+}
+
 function UserList() {
     require_once UOLTT_EXTENSION_DIR.'/pages/UserList.php';
 }
