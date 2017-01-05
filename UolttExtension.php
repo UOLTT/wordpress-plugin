@@ -15,10 +15,23 @@ if (!defined('UOLTT_EXTENSION_DIR')) {
 }
 
 add_action('admin_menu', function() {
-    add_menu_page('User Database', 'User Database', 'administrator', 'UserList', 'UserList');
-    add_submenu_page('UserMenu', 'User Entry', 'User Entry', 'administrator', 'UserMenuItems' );
+    $hook = add_menu_page('User Database', 'User Database', 'administrator', 'UserMenu', 'UserList');
+    add_submenu_page('UserMenu', 'User Entry', 'User Entry', 'administrator', 'AddUser', 'UserAdd' );
+    add_action( "load-$hook", 'add_user_list_options' );
 });
 
 function UserList() {
     require_once UOLTT_EXTENSION_DIR.'/pages/UserList.php';
+}
+
+function add_user_list_options() {
+    $option = 'per_page';
+
+    $args = array(
+        'label' => 'Users',
+        'default' => 20,
+        'option' => 'users_per_page'
+    );
+
+    add_screen_option( $option, $args );
 }

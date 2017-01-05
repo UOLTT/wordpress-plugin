@@ -59,11 +59,25 @@ class UsersListTable extends WP_List_Table
         return $columns;
     }
 
-    public function get_sortable_columns() {
+    public function get_sortable_columns()
+    {
         return [
-            'id' => ['id',false],
-            'name' => ['name',false]
+            'id' => ['id', false],
+            'name' => ['name', false]
         ];
+    }
+
+    public function pagination($current_page = 1)
+    {
+        /*
+        $screen = get_current_screen();
+        if (!is_null($screen->get_option('users_per_page','default'))) {
+            $per_page = 20;
+        }else {
+            $per_page = $screen->get_option('users_per_page','default');
+        }
+        */
+        $this->Users = array_chunk($this->Users,20)[$current_page - 1];
     }
 
     public function prepare_items()
@@ -73,22 +87,24 @@ class UsersListTable extends WP_List_Table
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
         usort($this->Users, array(&$this, 'usort_reorder'));
+        $this->pagination();
         $this->items = $this->Users;
     }
 
-    public function usort_reorder( $a, $b ) {
+    public function usort_reorder($a, $b)
+    {
         // If no sort, default to title
-        $orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'id';
+        $orderby = (isset($_GET['orderby'])) ? $_GET['orderby'] : 'id';
         // If no order, default to asc
-        $order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
+        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
         // Determine sort order
-        if ($_GET['orderby'] == "id") {
+        if ($orderby == "id") {
             $result = $a[$orderby] - $b[$orderby];
-        }else {
-            $result = strcmp( $a[$orderby], $b[$orderby] );
+        } else {
+            $result = strcmp($a[$orderby], $b[$orderby]);
         }
         // Send final sort direction to usort
-        return ( $order === 'asc' ) ? $result : -$result;
+        return ($order === 'asc') ? $result : -$result;
     }
 
 }
