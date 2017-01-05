@@ -38,6 +38,7 @@ class UsersListTable extends WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
+            case 'id':
             case 'name':
             case 'fleet_id':
             case 'squad_id':
@@ -50,7 +51,7 @@ class UsersListTable extends WP_List_Table
     public function get_columns()
     {
         $columns = array(
-            //'id' => 'User ID',
+            'id' => 'User ID',
             'name' => 'Users Name',
             'fleet_id' => 'Fleet',
             'squad_id' => 'Squadron'
@@ -58,13 +59,36 @@ class UsersListTable extends WP_List_Table
         return $columns;
     }
 
+    public function get_sortable_columns() {
+        return [
+            'id' => ['id',false],
+            'name' => ['name',false]
+        ];
+    }
+
     public function prepare_items()
     {
         $columns = $this->get_columns();
         $hidden = array();
-        $sortable = array();
+        $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
+        usort($this->Users, array(&$this, 'usort_reorder'));
         $this->items = $this->Users;
+    }
+
+    public function usort_reorder( $a, $b ) {
+        // If no sort, default to title
+        $orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'id';
+        // If no order, default to asc
+        $order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
+        // Determine sort order
+        if ($_GET['orderby'] == "id") {
+            $result = $a[$orderby] - $b[$orderby];
+        }else {
+            $result = strcmp( $a[$orderby], $b[$orderby] );
+        }
+        // Send final sort direction to usort
+        return ( $order === 'asc' ) ? $result : -$result;
     }
 
 }
