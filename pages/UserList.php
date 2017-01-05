@@ -6,39 +6,78 @@
  * Time: 4:46 PM
  */
 
-if ( ! class_exists( 'WP_List_Table' ) ) {
-    require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+if (!class_exists('WP_List_Table')) {
+    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-class Users_List extends WP_List_Table {
+class UsersListTable extends WP_List_Table
+{
+
+    private $Users;
 
     public function __construct()
     {
-        parent::__construct([
-            'singular' => 'User',
-            'plural' => 'Users',
-            'ajax' => false
-        ]);
-    }
-
-    public static function get_users($per_page = 20, $page_number = 1) {
         $ch = curl_init("https://api.uoltt.org/api/v4/users");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        $Users = json_decode(curl_exec($ch),true);
-        $Users = array_chunk($Users,$per_page)[$page_number - 1];
-
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $Users = json_decode(curl_exec($ch), true);
         curl_close($ch);
 
-        for ($i=0;$i<sizeof($Users);$i++) {
+        for ($i = 0; $i < sizeof($Users); $i++) {
             foreach ($Users[$i] as $key => $value) {
-                if (!in_array($key,['id','name','fleet_id','squad_id'])) {
+                if (!in_array($key, ['id', 'name', 'fleet_id', 'squad_id'])) {
                     unset($Users[$i][$key]);
+                } elseif (is_null($value)) {
+                    $Users[$i][$key] = "";
                 }
             }
         }
+        $this->Users = $Users;
+        parent::__construct();
+    }
 
-        return $Users;
+    public function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'name':
+            case 'fleet_id':
+            case 'squad_id':
+                return $item[$column_name];
+            default:
+                return print_r($item, true); //Show the whole array for troubleshooting purposes
+        }
+    }
+
+    public function get_columns()
+    {
+        $columns = array(
+            //'id' => 'User ID',
+            'name' => 'Users Name',
+            'fleet_id' => 'Fleet',
+            'squad_id' => 'Squadron'
+        );
+        return $columns;
+    }
+
+    public function prepare_items()
+    {
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = array();
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->items = $this->Users;
     }
 
 }
+
+$UsersListTable = new UsersListTable();
+
+?>
+
+<div class="wrap">
+    <div id="icon-users" class="icon32"></div>
+    <h2>My List Table Test</h2>
+    <?php
+    $UsersListTable->prepare_items();
+    $UsersListTable->display();
+    ?>
+</div>
