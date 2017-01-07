@@ -15,6 +15,7 @@ if (!defined('UOLTT_EXTENSION_DIR')) {
 }
 
 require_once UOLTT_EXTENSION_DIR.'/vendor/autoload.php';
+require_once UOLTT_EXTENSION_DIR.'/library/functions.php';
 
 add_action('admin_menu', function() {
     $hook = add_menu_page('User Database', 'User Database', 'administrator', 'UserMenu', 'UserList');
