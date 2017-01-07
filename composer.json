@@ -1,0 +1,7 @@
+{
+    "name": "uoltt/wordpress-plugin",
+    "description": "The interface between the UOLTT website and the Laravel powered backend",
+    "require": {
+        "guzzlehttp/guzzle": "^6.2"
+    }
+}
