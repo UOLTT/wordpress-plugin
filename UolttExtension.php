@@ -14,6 +14,8 @@ if (!defined('UOLTT_EXTENSION_DIR')) {
     define('UOLTT_EXTENSION_DIR', plugin_dir_path(__FILE__));
 }
 
+require_once UOLTT_EXTENSION_DIR.'/vendor/autoload.php';
+
 add_action('admin_menu', function() {
     $hook = add_menu_page('User Database', 'User Database', 'administrator', 'UserMenu', 'UserList');
     add_submenu_page('UserMenu', 'User Entry', 'User Entry', 'administrator', 'AddUser', 'UserAdd' );

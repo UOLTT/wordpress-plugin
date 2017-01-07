@@ -47,13 +47,13 @@
 <?php
 
 // TODO add ships?
-$handle = curl_init("");
-curl_setopt($handle, CURLOPT_POST, true);
-curl_setopt($handle, CURLOPT_POSTFIELDS, [
-    'name' => $_POST['name'],
-    'email' => $_POST['email'],
-    'game_handle' => $_POST['game_handle']
+$GuzzleClient = new GuzzleHttp\Client(['base_uri' => 'https://api.uoltt.org/api/v4/']);
+$Response = $GuzzleClient->post('users',[
+    'body' => [
+        'name' => $_POST['name'],
+        'email' => $_POST['email'],
+        'game_handle' => $_POST['game_handle']
+    ]
 ]);
-curl_exec($handle);
 
 ?>
