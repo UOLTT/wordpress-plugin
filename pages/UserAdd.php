@@ -6,7 +6,7 @@
         <table class="form-table">
             <tbody>
             <tr>
-                <td>Name:</td>
+                <td>Name:<small>(optional)</small>:</td>
                 <td>
                     <input type="text" name="name">
                 </td>
@@ -15,6 +15,18 @@
                 <td>Email Address<small>(optional)</small>:</td>
                 <td>
                     <input type="email" name="email">
+                </td>
+            </tr>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" name="username">
+                </td>
+            </tr>
+            <tr>
+                <td>Game Handle:</td>
+                <td>
+                    <input type="text" name="game_handle">
                 </td>
             </tr>
             <tr>
@@ -27,4 +39,21 @@
             </tbody>
         </table>
     </form>
+    <pre>
+        <?= print_r($_POST,true);?>
+    </pre>
 </div>
+
+<?php
+
+// TODO add ships?
+$handle = curl_init("");
+curl_setopt($handle, CURLOPT_POST, true);
+curl_setopt($handle, CURLOPT_POSTFIELDS, [
+    'name' => $_POST['name'],
+    'email' => $_POST['email'],
+    'game_handle' => $_POST['game_handle']
+]);
+curl_exec($handle);
+
+?>
