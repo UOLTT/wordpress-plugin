@@ -51,7 +51,7 @@
 if (array_key_exists('Submit',$_POST)) {
     $GuzzleClient = new GuzzleHttp\Client(['base_uri' => 'https://api.uoltt.org/api/v4/']);
     $Response = $GuzzleClient->post('users',[
-        'body' => [
+        'form_params' => [
             'name' => $_POST['name'],
             'email' => $_POST['email'],
             'game_handle' => $_POST['game_handle']
