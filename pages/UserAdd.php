@@ -1,3 +1,7 @@
+<?php
+$GuzzleClient = new GuzzleHttp\Client(['base_uri'=>'https://api.uoltt.org/api/v4/']);
+?>
+
 <div class="notice-success is-dismissible" id="success_message" style="display: none"></div>
 <div class="notice-error is-dismissible" id="error_message" style="display: none"></div>
 
@@ -33,6 +37,22 @@
                 </td>
             </tr>
             <tr>
+                <td>Ships:</td>
+                <td>
+                    <select multiple id="ships" style="width: 218px">
+                        <?php
+                        $Response = $GuzzleClient->get('ships');
+                        $Ships = json_decode($Response->getBody());
+                        foreach ($Ships as $Ship) {
+                            ?>
+                            <option value="<?= $Ships->id; ?>"><?= $Ship->shipname; ?></option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2">
                     <p class="submit">
                         <button type="button" onclick="AddUser()" class="button-primary">Add User</button>
@@ -52,7 +72,7 @@
             game_handle: jQuery('#game_handle').val(),
             email: jQuery('#email').val(),
             password: ''
-        }).done(function(data) {
+        }).success(function(data) {
             jQuery('#success_message').html('<p>User has been successfully added</p>');
             jQuery('#success_message').show();
         }).fail(function(data) {
