@@ -1,3 +1,6 @@
+<div class="notice-success is-dismissible" id="success_message" style="display: none"></div>
+<div class="notice-error is-dismissible" id="error_message" style="display: none"></div>
+
 <div class="wrap">
     <div id="icon-users" class="icon32"></div>
     <h2>Add New User</h2>
@@ -8,55 +11,53 @@
             <tr>
                 <td>Name:<small>(optional)</small>:</td>
                 <td>
-                    <input type="text" name="name">
+                    <input type="text" id="name">
                 </td>
             </tr>
             <tr>
                 <td>Email Address<small>(optional)</small>:</td>
                 <td>
-                    <input type="email" name="email">
+                    <input type="email" id="email">
                 </td>
             </tr>
             <tr>
                 <td>Username:</td>
                 <td>
-                    <input type="text" name="username">
+                    <input type="text" id="username">
                 </td>
             </tr>
             <tr>
                 <td>Game Handle:</td>
                 <td>
-                    <input type="text" name="game_handle">
+                    <input type="text" id="game_handle">
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <p class="submit">
-                        <input type="submit" value="Add User" class="button-primary" name="Submit">
+                        <button type="button" onclick="AddUser()" class="button-primary">Add User</button>
                     </p>
                 </td>
             </tr>
             </tbody>
         </table>
     </form>
-    <pre>
-        <?= print_r($_POST,true);?>
-    </pre>
 </div>
 
-<?php
-
-// TODO add ships?
-// Only fire on submit, not every page load
-if (array_key_exists('Submit',$_POST)) {
-    $GuzzleClient = new GuzzleHttp\Client(['base_uri' => 'https://api.uoltt.org/api/v4/']);
-    $Response = $GuzzleClient->post('users',[
-        'form_params' => [
-            'name' => $_POST['name'],
-            'email' => $_POST['email'],
-            'game_handle' => $_POST['game_handle']
-        ]
-    ]);
-}
-
-?>
+<script>
+    function AddUser() {
+        jQuery.post('https://api.uoltt.org/api/v4/users',{
+            name: jQuery('#name').val(),
+            username: jQuery('#username').val(),
+            game_handle: jQuery('#game_handle').val(),
+            email: jQuery('#email').val(),
+            password: ''
+        }).done(function(data) {
+            jQuery('#success_message').html('<p>User has been successfully added</p>');
+            jQuery('#success_message').show();
+        }).fail(function(data) {
+            jQuery('#error_message').html('<p>An error has occured. Either you didnt enter in all the data or you need to bug judahnator.</p>');
+            jQuery('#error_message').show();
+        });
+    }
+</script>
