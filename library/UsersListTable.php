@@ -18,14 +18,13 @@ class UsersListTable extends WP_List_Table
 
     public function __construct()
     {
-        $ch = curl_init("https://api.uoltt.org/api/v4/users");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $Users = json_decode(curl_exec($ch), true);
-        curl_close($ch);
+        $GuzzleClient = new GuzzleHttp\Client(['base_uri'=>'https://api.uoltt.org/api/v4/']);
+        $Response = $GuzzleClient->get('users');
+        $Users = json_decode($Response->getBody(),true);
 
         for ($i = 0; $i < sizeof($Users); $i++) {
             foreach ($Users[$i] as $key => $value) {
-                if (!in_array($key, ['id', 'name', 'fleet_id', 'squad_id'])) {
+                if (!in_array($key, ['id', 'username', 'game_handle', 'fleet_id', 'squad_id'])) {
                     unset($Users[$i][$key]);
                 } elseif (is_null($value)) {
                     $Users[$i][$key] = "";
@@ -40,7 +39,8 @@ class UsersListTable extends WP_List_Table
     {
         switch ($column_name) {
             case 'id':
-            case 'name':
+            case 'username':
+            case 'game_handle':
             case 'fleet_id':
             case 'squad_id':
                 return $item[$column_name];
@@ -53,7 +53,8 @@ class UsersListTable extends WP_List_Table
     {
         $columns = array(
             'id' => 'User ID',
-            'name' => 'Users Name',
+            'username' => 'Users Name',
+            'game_handle' => 'Game Handle',
             'fleet_id' => 'Fleet',
             'squad_id' => 'Squadron'
         );
@@ -64,21 +65,9 @@ class UsersListTable extends WP_List_Table
     {
         return [
             'id' => ['id', false],
-            'name' => ['name', false]
+            'username' => ['username', false],
+            'game_handle' => ['game_handle', false]
         ];
-    }
-
-    public function pagination($current_page = 1)
-    {
-        /*
-        $screen = get_current_screen();
-        if (!is_null($screen->get_option('users_per_page','default'))) {
-            $per_page = 20;
-        }else {
-            $per_page = $screen->get_option('users_per_page','default');
-        }
-        */
-        $this->Users = array_chunk($this->Users,20)[$current_page - 1];
     }
 
     public function prepare_items()
@@ -88,7 +77,6 @@ class UsersListTable extends WP_List_Table
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
         usort($this->Users, array(&$this, 'usort_reorder'));
-        $this->pagination();
         $this->items = $this->Users;
     }
 
