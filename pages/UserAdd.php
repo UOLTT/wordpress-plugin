@@ -1,6 +1,9 @@
 <?php
 $GuzzleClient = new GuzzleHttp\Client(['base_uri'=>'https://api.uoltt.org/api/v4/']);
+$Response = $GuzzleClient->get('ships');
+$Ships = json_decode($Response->getBody());
 ?>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <div class="notice-success is-dismissible" id="success_message" style="display: none"></div>
 <div class="notice-error is-dismissible" id="error_message" style="display: none"></div>
@@ -39,17 +42,9 @@ $GuzzleClient = new GuzzleHttp\Client(['base_uri'=>'https://api.uoltt.org/api/v4
             <tr>
                 <td>Ships:</td>
                 <td>
-                    <select multiple id="ships" style="width: 218px">
-                        <?php
-                        $Response = $GuzzleClient->get('ships');
-                        $Ships = json_decode($Response->getBody());
-                        foreach ($Ships as $Ship) {
-                            ?>
-                            <option value="<?= $Ships->id; ?>"><?= $Ship->shipname; ?></option>
-                            <?php
-                        }
-                        ?>
-                    </select>
+                    <input id="shipsList"><br>
+                    <button type="button" class="button-primary">Add Ship</button><br>
+                    <select multiple disabled id="ships" style="width: 218px"></select>
                 </td>
             </tr>
             <tr>
@@ -65,19 +60,57 @@ $GuzzleClient = new GuzzleHttp\Client(['base_uri'=>'https://api.uoltt.org/api/v4
 </div>
 
 <script>
+    var ShipIdMap = {
+        <?php
+        $map = [];
+        foreach ($Ships as $Ship) {
+            $map[] = "'".$Ship->shipname."': ".$Ship->id;
+        }
+        echo implode(',',$map);
+        ?>
+    };
+
+    jQuery( function() {
+        var availableTags = [
+            <?php
+            $ids = [];
+            foreach ($Ships as $Ship) {
+                $ids[] = '"'.$Ship->shipname.'"';
+            }
+            echo implode(',',$ids);
+            ?>
+        ];
+        jQuery( "#shipsList" ).autocomplete({
+            source: availableTags
+        });
+    } );
+
+    jQuery('#shipsList').on('autocompletechange',function (event, ui) {
+        var ShipName = ui.item.label;
+        console.log(ShipName + ": " + ShipIdMap[ShipName]);
+        jQuery('#ships').html(
+            jQuery('#ships').html() + '<option selected value="' + ShipIdMap[ShipName] + '">' + ShipName + '</option>'
+        );
+    });
+
     function AddUser() {
         jQuery.post('https://api.uoltt.org/api/v4/users',{
             name: jQuery('#name').val(),
             username: jQuery('#username').val(),
             game_handle: jQuery('#game_handle').val(),
             email: jQuery('#email').val(),
-            password: ''
-        }).success(function(data) {
-            jQuery('#success_message').html('<p>User has been successfully added</p>');
-            jQuery('#success_message').show();
-        }).fail(function(data) {
-            jQuery('#error_message').html('<p>An error has occured. Either you didnt enter in all the data or you need to bug judahnator.</p>');
-            jQuery('#error_message').show();
+            password: '',
+            ships: jQuery('#ships').val()
+        }).always(function(data) {
+            if (data.error == undefined) {
+                jQuery('#success_message').html('<p>User has been successfully added</p>');
+                jQuery('#error_message').hide();
+                jQuery('#success_message').show();
+            }else {
+                jQuery('#error_message').html('<p>An error has occured. Either you didnt enter in all the data or you need to bug judahnator.</p>');
+                jQuery('#success_message').hide();
+                jQuery('#error_message').show();
+            }
         });
     }
 </script>
