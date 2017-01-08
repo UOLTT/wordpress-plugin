@@ -6,7 +6,7 @@
  * Time: 4:46 PM
  */
 
-require_once UOLTT_EXTENSION_DIR.'/library/UserListTable.php';
+require_once UOLTT_EXTENSION_DIR.'/library/UsersListTable.php';
 
 $UsersListTable = new UsersListTable();
 
