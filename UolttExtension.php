@@ -18,9 +18,15 @@ require_once UOLTT_EXTENSION_DIR.'/vendor/autoload.php';
 require_once UOLTT_EXTENSION_DIR.'/library/functions.php';
 
 add_action('admin_menu', function() {
+    // User List page
     $hook = add_menu_page('User Database', 'User Database', 'administrator', 'UserMenu', 'UserList');
-    add_submenu_page('UserMenu', 'User Entry', 'User Entry', 'administrator', 'AddUser', 'UserAdd' );
     add_action( "load-$hook", 'add_user_list_options' );
+
+    // User Add page
+    add_submenu_page('UserMenu', 'User Entry', 'User Entry', 'administrator', 'AddUser', 'UserAdd' );
+
+    // User Edit page
+    add_submenu_page(null, 'User Add', 'User Add', 'administrator', 'UserEdit', 'UserEdit');
 });
 
 function UserAdd() {
@@ -29,6 +35,10 @@ function UserAdd() {
 
 function UserList() {
     require_once UOLTT_EXTENSION_DIR.'/pages/UserList.php';
+}
+
+function UserEdit() {
+    // TODO UserEdit page
 }
 
 function add_user_list_options() {
