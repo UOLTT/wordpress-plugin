@@ -37,8 +37,6 @@ if (array_key_exists('Submit',$_POST)) {
 ?>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-<div class="notice notice-error is-dismissible" id="error_message" style="display: none"></div>
-
 <div class="wrap">
     <div id="icon-users" class="icon32"></div>
     <h2>Add New User</h2>
