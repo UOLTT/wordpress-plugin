@@ -38,7 +38,7 @@ function UserList() {
 }
 
 function UserEdit() {
-    // TODO UserEdit page
+    require_once UOLTT_EXTENSION_DIR.'/pages/UserEdit.php';
 }
 
 function add_user_list_options() {
